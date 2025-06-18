@@ -43,9 +43,8 @@
 
     const loader = new GLTFLoader();
 
-    // Load the model immediately
     loader.load(
-      'anakins_pod_racer.glb',
+      'anakins_pod_racer.glb', // Make sure this file is in the same folder as this HTML
       (gltf) => {
         racer = gltf.scene;
         racer.scale.set(1.5, 1.5, 1.5);
