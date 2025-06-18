@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Podracer Infinite</title>
+  <style>
+    html, body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+    #ui {
+      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(255,255,255,0.1); padding: 20px 30px; border-radius: 16px;
+      color: white; z-index: 10; text-align: center; backdrop-filter: blur(8px);
+    }
+    #startButton {
+      margin-top: 10px; padding: 10px 20px;
+      background: white; color: black; border: none;
+      font-size: 16px; border-radius: 8px; cursor: pointer;
+    }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <h1>🚀 Podracer Infinite</h1>
+    <p>Click start to begin the race!</p>
+    <button id="startButton">Start Race</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script>
+    let scene, camera, renderer, racer;
+    let loaded = false;
+
+    document.getElementById('startButton').onclick = () => {
+      if (!loaded) {
+        alert("⏳ Still loading podracer model... please wait a second.");
+        return;
+      }
+      document.getElementById('ui').style.display = 'none';
+      startRace();
+    };
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('anakins_pod_racer.glb',
+      gltf => {
+        racer = gltf.scene;
+        racer.scale.set(1.5, 1.5, 1.5);
+        racer.position.set(0, 0.5, 0);
+        loaded = true;
+        console.log("✅ Podracer model loaded.");
+      },
+      undefined,
+      err => {
+        console.error("❌ Failed to load model:", err);
+        alert("Failed to load 'anakins_pod_racer.glb'. Make sure it's in the same folder.");
+      }
+    );
+
+    function startRace() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+      light.position.set(0, 200, 0);
+      scene.add(light);
+
+      if (racer) {
+        scene.add(racer);
+      }
+
+      camera.position.set(0, 2, 5);
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (racer) {
+        racer.rotation.y += 0.01;
+      }
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+</html>
