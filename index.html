@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Podracer Infinite</title>
-  <style>
-    html, body {
-      margin: 0; overflow: hidden; background: #000; font-family: sans-serif;
-      height: 100%;
-      width: 100%;
-    }
-    #ui {
-      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-      background: rgba(255,255,255,0.1); padding: 20px 30px; border-radius: 16px;
-      color: white; z-index: 10; text-align: center; backdrop-filter: blur(8px);
-    }
-    #startButton {
-      margin-top: 10px; padding: 10px 20px;
-      background: white; color: black; border: none;
-      font-size: 16px; border-radius: 8px; cursor: pointer;
-    }
-    canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Podracer Infinite</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; background:#000; height:100%; }
+  #ui { position:absolute; top:20px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.1); padding:20px; color:#fff; border-radius:16px; backdrop-filter:blur(8px); text-align:center; z-index:10;}
+  button { margin-top:10px; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
+</style>
 </head>
 <body>
   <div id="ui">
@@ -42,28 +25,20 @@
     let loaded = false;
 
     const loader = new GLTFLoader();
-
-    loader.load(
-      'anakins_pod_racer.glb', // Make sure this file is in the same folder as this HTML
-      (gltf) => {
-        racer = gltf.scene;
-        racer.scale.set(1.5, 1.5, 1.5);
-        racer.position.set(0, 0.5, 0);
-        loaded = true;
-        console.log("✅ Podracer model loaded.");
-      },
-      (xhr) => {
-        console.log(`Loading model: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
-      },
-      (error) => {
-        console.error("❌ Failed to load model:", error);
-        alert("Failed to load 'anakins_pod_racer.glb'. Make sure it's in the same folder as index.html.");
-      }
-    );
+    loader.load('anakins_pod_racer.glb', (gltf) => {
+      racer = gltf.scene;
+      racer.scale.set(1.5, 1.5, 1.5);
+      racer.position.set(0, 0.5, 0);
+      loaded = true;
+      console.log('✅ Podracer model loaded.');
+    }, undefined, (error) => {
+      console.error('❌ Failed to load model:', error);
+      alert('Failed to load anakins_pod_racer.glb - make sure it is uploaded correctly.');
+    });
 
     document.getElementById('startButton').onclick = () => {
       if (!loaded) {
-        alert("⏳ Still loading podracer model... please wait a second.");
+        alert('⏳ Still loading podracer model... please wait.');
         return;
       }
       document.getElementById('ui').style.display = 'none';
@@ -72,16 +47,10 @@
 
     function startRace() {
       scene = new THREE.Scene();
-
-      camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-      );
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
       camera.position.set(0, 2, 5);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer = new THREE.WebGLRenderer({antialias:true});
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
@@ -89,9 +58,7 @@
       light.position.set(0, 200, 0);
       scene.add(light);
 
-      if (racer) {
-        scene.add(racer);
-      }
+      scene.add(racer);
 
       window.addEventListener('resize', onWindowResize);
 
@@ -100,18 +67,13 @@
 
     function animate() {
       requestAnimationFrame(animate);
-
-      if (racer) {
-        racer.rotation.y += 0.01;
-      }
-
+      if (racer) racer.rotation.y += 0.01;
       renderer.render(scene, camera);
     }
 
     function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect = window.innerWidth/window.innerHeight;
       camera.updateProjectionMatrix();
-
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
   </script>
